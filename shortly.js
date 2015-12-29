@@ -36,8 +36,9 @@ app.use(session({
 
 app.get('/',
 function(req, res) {
-  console.log('in get this is req.session --> ', req.session, '<-- in get this is req.session');
-  console.log(req.cookie, '<-- req.cookie from app get /');
+  // console.log('in get this is req.session --> ', req.session, '<-- in get this is req.session');
+  console.log(req.session.cookie, '<-- req.session.cookie from app get /');
+  console.log(req.session.genid, '<-- req.session.genid from app get /');
 
   if (checkUser(req, res)) {
     res.render('index');
@@ -132,27 +133,28 @@ function(req, res) {
   // res.send(200);
   });
 });
+
+app.post('/login',
+function(req, res) {
+  new User({ username: req.body.username }).fetch().then(function(found) {
+    if (found) {
+      // the username already exists, check password
+      console.log(found, 'the value of found inside the login');
+      res.send(200, 'Username taken, please pick another');
+    }
+    else {
+      // new user to add?
+      res.send(200, 'that username isn\'t in our database');
+    }
+  });
+});
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
 function makeSession (req, res){
-  // app.use(session({
-  //   genid: function(req){
-  //     return req.body.username;
-  //   },
-  //   secret: 'madeline gabe nyan',
-  //   resave: false,
-  //   saveUninitialized: true,
-  //   cookie: {}
-  // }));
 
-  req.session.regenerate(function(err) {
-    // will have a new session here
-    if (err) throw err;
-    console.log(req.session, '<-- this is in regenration, req.session');
-  });
-
-  console.log(req.cookie, '<-- req.cookie from makeSession');
+  req.session.genid = req.body.username;
+  console.log(req.session.genid, '<-- req.session.genid from makeSession');
 }
 // request.session <-- the object that is in the cookie
 // after they sucessfully provide password,
@@ -161,7 +163,7 @@ function makeSession (req, res){
 
 // check request.session.username every time they do something that needs a logged-in user
 var checkUser = function(req, res){
-  if( !req.session ){
+  if( !req.session.genid ){
     return false;
   }
   return true;
