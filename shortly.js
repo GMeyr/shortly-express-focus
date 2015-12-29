@@ -23,12 +23,22 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
-
+app.use(session({
+  genid: function(req){
+    return req.body.username;
+  },
+  secret: 'madeline gabe nyan',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {}
+}));
 
 
 app.get('/',
 function(req, res) {
   console.log('in get this is req.session --> ', req.session, '<-- in get this is req.session');
+  console.log(req.cookie, '<-- req.cookie from app get /');
+
   if (checkUser(req, res)) {
     res.render('index');
   }
@@ -113,7 +123,7 @@ function(req, res) {
       newUser.save().then(function(thisUser) {
         Users.add(thisUser);
         // make sure ther's a session here, then divert to index
-        makeSession();
+        makeSession(req, res);
         //res.send(303);
         res.setHeader('Location', './');
         res.redirect(303);
@@ -125,16 +135,24 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-function makeSession (){
-  app.use(session({
-    genid: function(req){
-      return req.body.username;
-    },
-    secret: 'madeline gabe nyan',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {}
-  }));
+function makeSession (req, res){
+  // app.use(session({
+  //   genid: function(req){
+  //     return req.body.username;
+  //   },
+  //   secret: 'madeline gabe nyan',
+  //   resave: false,
+  //   saveUninitialized: true,
+  //   cookie: {}
+  // }));
+
+  req.session.regenerate(function(err) {
+    // will have a new session here
+    if (err) throw err;
+    console.log(req.session, '<-- this is in regenration, req.session');
+  });
+
+  console.log(req.cookie, '<-- req.cookie from makeSession');
 }
 // request.session <-- the object that is in the cookie
 // after they sucessfully provide password,
