@@ -34,7 +34,13 @@ function(req, res) {
 
 app.get('/create',
 function(req, res) {
+  checkUser(req, res);
   res.render('index');
+});
+
+app.get('/signup',
+function(req, res) {
+  res.render('signup');
 });
 
 app.get('/links',
@@ -80,6 +86,12 @@ function(req, res) {
   });
 });
 
+app.post('/signup',
+function(req, res) {
+  console.log(req.body, "request body");
+  res.send(200);
+});
+
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
@@ -102,7 +114,7 @@ var checkUser = function(req, res){
   if( !req.session ){
     res.render('login');
   }
-}
+};
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
