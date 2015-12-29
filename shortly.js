@@ -11,6 +11,9 @@ var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
 
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+
 var app = express();
 
 app.set('views', __dirname + '/views');
@@ -21,7 +24,8 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
-app.use(express.session());
+app.use(express.cookieParser('madeline gabe nyan'));
+app.use(express.cookieSession());
 
 app.get('/',
 function(req, res) {
@@ -80,7 +84,11 @@ function(req, res) {
 // Write your authentication routes here
 /************************************************************/
 
+// request.session <-- the object that is in the cookie
+// after they sucessfully provide password,
+  // request.session.username = username provided in box
 
+// check request.session.username every time they do something that needs a logged-in user
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
