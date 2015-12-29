@@ -11,7 +11,6 @@ var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
 
-var cookieParser = require('cookie-parser');
 var session = require('express-session');
 
 var app = express();
@@ -24,8 +23,8 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
-app.use(express.cookieParser('madeline gabe nyan'));
-app.use(express.cookieSession());
+
+
 
 app.get('/',
 function(req, res) {
@@ -83,10 +82,19 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-
+app.use(session({
+  genid: function(req){
+    //return req.body.username,
+  },
+  secret: 'madeline gabe nyan',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {}
+}));
 // request.session <-- the object that is in the cookie
 // after they sucessfully provide password,
   // request.session.username = username provided in box
+  //request.session.genid
 
 // check request.session.username every time they do something that needs a logged-in user
 
