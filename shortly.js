@@ -89,9 +89,26 @@ function(req, res) {
 app.post('/signup',
 function(req, res) {
   console.log(req.body, "request body");
-  res.send(200);
-});
+  new User({ username: req.body.username }).fetch().then(function(found) {
+    if (found) {
+      // the username already exists
+      res.send(200, 'Username taken, please pick another');
+    }
+    else {
+      // new user to add?
+      var newUser = new User({
+        username: req.body.username,
+        password: req.body.password
+      });
 
+      newUser.save().then(function(thisUser) {
+        Users.add(thisUser);
+        res.send(200, 'made a user for you');
+      });
+    }
+  // res.send(200);
+  });
+});
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
