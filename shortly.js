@@ -28,14 +28,23 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/',
 function(req, res) {
-  checkUser(req, res);
-  res.render('index');
+  console.log('in get this is req.session --> ', req.session, '<-- in get this is req.session');
+  if (checkUser(req, res)) {
+    res.render('index');
+  }
+  else {
+    res.render('login');
+  }
 });
 
 app.get('/create',
 function(req, res) {
-  checkUser(req, res);
-  res.render('index');
+  if (checkUser(req, res)) {
+    res.render('index');
+  }
+  else {
+    res.render('login');
+  }
 });
 
 app.get('/signup',
@@ -103,7 +112,11 @@ function(req, res) {
 
       newUser.save().then(function(thisUser) {
         Users.add(thisUser);
-        res.send(200, 'made a user for you');
+        // make sure ther's a session here, then divert to index
+        makeSession();
+        //res.send(303);
+        res.setHeader('Location', './');
+        res.redirect(303);
       });
     }
   // res.send(200);
@@ -112,15 +125,17 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-app.use(session({
-  genid: function(req){
-    //return req.body.username,
-  },
-  secret: 'madeline gabe nyan',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {}
-}));
+function makeSession (){
+  app.use(session({
+    genid: function(req){
+      return req.body.username;
+    },
+    secret: 'madeline gabe nyan',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {}
+  }));
+}
 // request.session <-- the object that is in the cookie
 // after they sucessfully provide password,
   // request.session.username = username provided in box
@@ -129,8 +144,9 @@ app.use(session({
 // check request.session.username every time they do something that needs a logged-in user
 var checkUser = function(req, res){
   if( !req.session ){
-    res.render('login');
+    return false;
   }
+  return true;
 };
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
