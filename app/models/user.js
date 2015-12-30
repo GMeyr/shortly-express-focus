@@ -12,6 +12,21 @@ var User = db.Model.extend({
   //   return this.hasMany(Click);
   // },
 
+  // the promise verion, calling it with then, might have worked if we promisified this compare
+  // Ben says it's odd to mix callbacks and promises
+  // Ben says that if we can get at an attribute directly in the user object, we should
+  // ie, replace hashedPassword below with a var on line 20
+  checkPassword: function(password, callback){
+    var hashedPassword = this.get('password');
+    bcrypt.compare(password, hashedPassword, function(err, res){
+      console.log(res, 'in checkPassword');
+      callback(res);
+      // if (res){
+      //   //login
+      //   res.render('index');
+    });
+  },
+
   initialize: function(){
     var encodedFn = Promise.promisify(bcrypt.hash);
     this.on('creating', function(model, attrs, options){
