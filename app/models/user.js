@@ -11,16 +11,22 @@ var User = db.Model.extend({
   // clicks: function() {
   //   return this.hasMany(Click);
   // },
+
   initialize: function(){
+    var encodedFn = Promise.promisify(bcrypt.hash);
     this.on('creating', function(model, attrs, options){
-      var hashedPW = bcrypt.hash(model.get('password'), null, null, function(err, hash) {
-        // Store hash in your password DB.
-        if (err) {
-          console.log(err);
-          return;
-        }
-        model.set('password', hash);
-      });
+      return encodedFn(model.get('password'), null, null).then(function(hash){
+          model.set('password', hash);
+          console.log(hash, "<-- this is the hash");
+        });
+      // var hashedPW = bcrypt.hash(model.get('password'), null, null, function(err, hash) {
+      //   // Store hash in your password DB.
+      //   if (err) {
+      //     console.log(err);
+      //     return;
+      //   }
+      //   model.set('password', hash);
+      // });
     });
   }
 });

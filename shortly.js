@@ -36,9 +36,9 @@ app.use(session({
 app.get('/',
 function(req, res) {
   // console.log('in get this is req.session --> ', req.session, '<-- in get this is req.session');
-  console.log(req.session.cookie, '<-- req.session.cookie from app get /');
+  // console.log(req.session.cookie, '<-- req.session.cookie from app get /');
   console.log(req.session.genid, '<-- req.session.genid from app get /');
-  console.log(req.url, 'request url');
+  // console.log(req.url, 'request url');
 
   if (checkUser(req, res)) {
     res.render('index');
