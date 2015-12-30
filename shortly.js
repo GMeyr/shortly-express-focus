@@ -65,14 +65,12 @@ function(req, res) {
 
 app.get('/logout',
 function(req, res) {
-  console.log(req.session, "session BEFORE destruction");
   req.session.destroy(function(err) {
     // cannot access session here
     if (err) {
       console.log(err);
     }
   });
-  console.log(req.session, "session AFTER destruction");
   res.render('login');
 });
 
