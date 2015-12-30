@@ -33,12 +33,12 @@ app.use(session({
   cookie: {}
 }));
 
-
 app.get('/',
 function(req, res) {
   // console.log('in get this is req.session --> ', req.session, '<-- in get this is req.session');
   console.log(req.session.cookie, '<-- req.session.cookie from app get /');
   console.log(req.session.genid, '<-- req.session.genid from app get /');
+  console.log(req.url, 'request url');
 
   if (checkUser(req, res)) {
     res.render('index');
@@ -61,6 +61,19 @@ function(req, res) {
 app.get('/signup',
 function(req, res) {
   res.render('signup');
+});
+
+app.get('/logout',
+function(req, res) {
+  console.log(req.session, "session BEFORE destruction");
+  req.session.destroy(function(err) {
+    // cannot access session here
+    if (err) {
+      console.log(err);
+    }
+  });
+  console.log(req.session, "session AFTER destruction");
+  res.render('login');
 });
 
 app.get('/links',
@@ -140,7 +153,17 @@ function(req, res) {
     if (found) {
       // the username already exists, check password
       console.log(found, 'the value of found inside the login');
-      res.send(200, 'Username taken, please pick another');
+      if (found.attributes.password === req.body.password) {
+        //send index
+        makeSession(req, res);
+        //res.send(303);
+        res.setHeader('Location', './');
+        res.redirect(303);
+      }
+      else {
+        // send sad note about wrong password
+        res.send(200, 'Incorrect password');
+      }
     }
     else {
       // new user to add?
