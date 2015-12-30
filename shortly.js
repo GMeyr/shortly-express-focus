@@ -41,26 +41,41 @@ function(req, res) {
   // console.log(req.url, 'request url');
 
   if (checkUser(req, res)) {
+    // res.location('/');
     res.render('index');
   }
   else {
-    res.render('login');
+    res.redirect(302, '/login');
   }
 });
 
+// //app.get('/create',handler1,handler2);
+// var handler1 = function(req,res,next){
+// if (checkUser(req, res)) {
+//     next();
+//   }
+//   else {
+//     res.redirect(302, '/login');
+//   }
+// }
 app.get('/create',
 function(req, res) {
   if (checkUser(req, res)) {
     res.render('index');
   }
   else {
-    res.render('login');
+    res.redirect(302, '/login');
   }
 });
 
 app.get('/signup',
 function(req, res) {
   res.render('signup');
+});
+
+app.get('/login',
+function(req, res) {
+  res.render('login');
 });
 
 app.get('/logout',
@@ -76,9 +91,14 @@ function(req, res) {
 
 app.get('/links',
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.send(200, links.models);
-  });
+  if( checkUser(req, res)){
+    Links.reset().fetch().then(function(links) {
+      res.send(200, links.models);
+    });
+  } else {
+    res.redirect(302, '/login');
+  }
+
 });
 
 app.post('/links',
@@ -137,8 +157,10 @@ function(req, res) {
         // make sure ther's a session here, then divert to index
         makeSession(req, res);
         //res.send(303);
-        res.setHeader('Location', './');
-        res.redirect(303);
+        // res.setHeader('Location', '/');
+        res.location('/');
+
+        res.redirect(302, '/');
       });
     }
   // res.send(200);
@@ -163,7 +185,7 @@ function(req, res) {
     //     res.send(200, 'Incorrect password');
     //   }
     // }
-    console.log(user.checkPassword, 'user.checkPassword results');
+    // console.log(user.checkPassword, 'user.checkPassword results');
     if (!user) {
       // new user to add?
       return res.send(200, 'that username isn\'t in our database');
@@ -177,10 +199,13 @@ function(req, res) {
       if(passwordCorrect){
         console.log("samePassword");
         makeSession(req, res);
-        res.redirect('./index');
+        res.redirect('/index');
       }
       else {
         console.log("not same password?");
+        res.redirect('/login');
+
+        // res.send(200, 'Incorrect password');
       }
     });
 

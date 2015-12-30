@@ -13,7 +13,9 @@ var Link = require('../app/models/link');
 // Remove the 'x' from beforeEach block when working on
 // authentication tests.
 /************************************************************/
-var beforeEach = function(){};
+var beforeEach = function(callback){
+  callback(function(){});
+};
 /************************************************************/
 
 
@@ -160,6 +162,7 @@ describe('', function() {
           title: 'Funny pictures of animals, funny dog pictures',
           base_url: 'http://127.0.0.1:4568'
         });
+        console.log(link, "---------link---------");
         link.save().then(function(){
           done();
         });
@@ -177,6 +180,7 @@ describe('', function() {
 
         requestWithSession(options, function(error, res, body) {
           var code = res.body.code;
+
           expect(code).to.equal(link.get('code'));
           done();
         });
@@ -278,6 +282,7 @@ describe('', function() {
       };
 
       request(options, function(error, res, body) {
+        console.log(res.headers, "<--- res.headers");
         expect(res.headers.location).to.equal('/');
         done();
       });
