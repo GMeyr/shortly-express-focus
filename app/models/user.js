@@ -19,7 +19,7 @@ var User = db.Model.extend({
   checkPassword: function(password, callback){
     var hashedPassword = this.get('password');
     bcrypt.compare(password, hashedPassword, function(err, res){
-      console.log(res, 'in checkPassword');
+      // console.log(res, 'in checkPassword');
       callback(res);
       // if (res){
       //   //login
